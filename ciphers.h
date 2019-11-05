@@ -37,7 +37,7 @@ void sham_save_prime(int_least64_t p);
 void sham_load_key(int_least64_t *c, int_least64_t *d, char *filename);
 void sham_load_prime(int_least64_t *p);
 
-void vernam_encrypt(int n, int *n1, int *n2, int *key);
+void vernam_encrypt(int n, int *n1,int *n2, int *key);
 void vernam_part_decrypt(int n, int *n1, int *n2, int *key);
-void vernam_decrypt(int n, int *n1, int *key);
+int* vernam_decrypt(int n, int *n1, int *key);
 #endif 
