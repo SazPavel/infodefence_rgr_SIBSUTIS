@@ -66,7 +66,7 @@ void relabeling(int n, int num_of_colors, int *vertexes)
     }
     for(i = 0; i < n; i++)
     {
-        vertexes[i] += 1;
+        vertexes[i] = colors[vertexes[i] - 1];
     }
 }
 

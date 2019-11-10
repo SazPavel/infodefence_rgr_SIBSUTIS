@@ -3,15 +3,14 @@
 int main()
 {
     int command, sock, child_sock, n, num_of_colors, *vertexes, *encrypted_vertexes, *key;
-    int vertexes_for_test[2], vertexes_for_test_num[2];
+    int vertexes_for_test[2], vertexes_for_test_num[2], i;
     struct sockaddr_in addr, child;
     socklen_t size = sizeof(child);
     
     load_graph_size(&n, "tmp/graph");
-    vertexes = load_colored(&num_of_colors, n, "tmp/color");   //array of vertex colors
+    vertexes = load_colored(&num_of_colors, n, "tmp/graph2");   //array of vertex colors
     encrypted_vertexes = malloc(n * sizeof(int));
     key = malloc(n * sizeof(int));
-    relabeling(n, num_of_colors, vertexes);
 
     sock = socket(AF_INET, SOCK_STREAM, 0);     //tcp socket for communication
     if(sock < 0)
@@ -34,6 +33,11 @@ int main()
         recv(child_sock, &command, sizeof(command), 0);
         if(command == 1)
         {
+            relabeling(n, num_of_colors, vertexes);
+            printf("colors:\n");
+            for(i = 0; i < n; i++)
+                printf("%d ", vertexes[i]);
+            printf("\n");
             vernam_encrypt(n, vertexes, encrypted_vertexes, key);
             send(child_sock, encrypted_vertexes, sizeof(int)*n, 0);
             recv(child_sock, vertexes_for_test_num, sizeof(int)*2, 0);              //numbers of two vertexs for test

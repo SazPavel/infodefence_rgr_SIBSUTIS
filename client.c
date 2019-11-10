@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    int i,*encrypted_vertexes, n, m, command, **A;
+    int i,*encrypted_vertexes, n, m, command = 1, **A;
     int sock, vertexes_for_test[2], vertexes_for_test_encrypt[2], key[2], vertexes_for_test_num[2];
     int vertexes_for_test_server_decrypt[2], *server_key, *vertexes_decrypt, *vertexes_decrypt_2;
     struct sockaddr_in addr;
@@ -27,14 +27,6 @@ int main(int argc, char *argv[])
     }
     while(1)
     {
-        printf("1 - another one test, other - finish testing\n");
-        do
-        {
-            if(!fgets(buf, sizeof(buf), stdin))
-                break;
-            command = strtol(buf, &end, 10);
-        }while(end != buf + strlen(buf));   //reading an input line
-
         send(sock, &command, sizeof(int), 0);
         if(command != 1)
         {    
@@ -55,17 +47,26 @@ int main(int argc, char *argv[])
         recv(sock, vertexes_for_test_server_decrypt, sizeof(int)*2, 0);
         server_key = vernam_decrypt(2, vertexes_for_test_encrypt, vertexes_for_test_server_decrypt);
         vertexes_decrypt = vernam_decrypt(2, vertexes_for_test_server_decrypt, key);
-        if(vertexes_decrypt[0] == vertexes_decrypt[1])
+        if(vertexes_decrypt[0] == vertexes_decrypt[1])		//first test
         {
-            printf("ERROR vertex equal!\n");
-        }
-        vertexes_decrypt_2 = vernam_decrypt(2, vertexes_for_test, server_key);
+            printf("\nERROR colors equal!\n\n");
+        }else
+        	printf("\nColors not equal\n\n");
+        vertexes_decrypt_2 = vernam_decrypt(2, vertexes_for_test, server_key);	//second test
         for(i = 0; i < 2; i++)
         {
             if(vertexes_decrypt_2[i] != vertexes_decrypt[i])
                 printf("ERROR server key changed!\n");
         }
         printf("vertex %d: color %d\nvertex %d: color %d\n", vertexes_for_test_num[0], vertexes_decrypt[0]-1, vertexes_for_test_num[1], vertexes_decrypt[1]-1);
+        printf("1 - another one test, other - finish testing\n");
+        do
+        {
+            if(!fgets(buf, sizeof(buf), stdin))
+                break;
+            command = strtol(buf, &end, 10);
+        }while(end != buf + strlen(buf));   //reading an input line
+
     }
     for(i = 0; i < n; i++)
         free(A[i]);
