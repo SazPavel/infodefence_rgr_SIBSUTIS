@@ -3,7 +3,8 @@
 int main(int argc, char *argv[])
 {
     int i,*encrypted_vertexes, n, m, command, **A;
-    int sock, vertexes_for_test[2], key[2], vertexes_for_test_num[2];
+    int sock, vertexes_for_test[2], vertexes_for_test_encrypt[2], key[2], vertexes_for_test_num[2];
+    int vertexes_for_test_server_decrypt[2], *server_key, *vertexes_decrypt, *vertexes_decrypt_2;
     struct sockaddr_in addr;
     char *end;
     char buf[2];
@@ -48,16 +49,23 @@ int main(int argc, char *argv[])
         printf("\n");
         for(i = 0; i < 2; i++)
             vertexes_for_test[i] = encrypted_vertexes[vertexes_for_test_num[i]];
-        vernam_encrypt(2, vertexes_for_test, vertexes_for_test, key);
+        vernam_encrypt(2, vertexes_for_test, vertexes_for_test_encrypt, key);
         send(sock, vertexes_for_test_num, sizeof(int)*2, 0);
-        send(sock, vertexes_for_test, sizeof(int)*2, 0);
-        recv(sock, vertexes_for_test, sizeof(int)*2, 0);
-        vernam_decrypt(2, vertexes_for_test, key);
-        if(vertexes_for_test[0] == vertexes_for_test[1])
+        send(sock, vertexes_for_test_encrypt, sizeof(int)*2, 0);
+        recv(sock, vertexes_for_test_server_decrypt, sizeof(int)*2, 0);
+        server_key = vernam_decrypt(2, vertexes_for_test_encrypt, vertexes_for_test_server_decrypt);
+        vertexes_decrypt = vernam_decrypt(2, vertexes_for_test_server_decrypt, key);
+        if(vertexes_decrypt[0] == vertexes_decrypt[1])
         {
-            printf("ERROR\n");
+            printf("ERROR vertex equal!\n");
         }
-        printf("vertex %d: color %d\nvertex %d: color %d\n", vertexes_for_test_num[0], vertexes_for_test[0]-1, vertexes_for_test_num[1], vertexes_for_test[1]-1);
+        vertexes_decrypt_2 = vernam_decrypt(2, vertexes_for_test, server_key);
+        for(i = 0; i < 2; i++)
+        {
+            if(vertexes_decrypt_2[i] != vertexes_decrypt[i])
+                printf("ERROR server key changed!\n");
+        }
+        printf("vertex %d: color %d\nvertex %d: color %d\n", vertexes_for_test_num[0], vertexes_decrypt[0]-1, vertexes_for_test_num[1], vertexes_decrypt[1]-1);
     }
     for(i = 0; i < n; i++)
         free(A[i]);
