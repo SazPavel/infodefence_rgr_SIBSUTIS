@@ -8,7 +8,7 @@ int main()
     socklen_t size = sizeof(child);
     
     load_graph_size(&n, "tmp/graph");
-    vertexes = load_colored(&num_of_colors, n, "tmp/graph2");   //array of vertex colors
+    vertexes = load_colored(&num_of_colors, n, "tmp/color");   //array of vertex colors
     encrypted_vertexes = malloc(n * sizeof(int));
     key = malloc(n * sizeof(int));
     relabeling(n, num_of_colors, vertexes);
