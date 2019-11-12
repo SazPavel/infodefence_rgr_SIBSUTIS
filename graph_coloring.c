@@ -41,7 +41,8 @@ void load_graph_size(int *n, char *filename)
 void relabeling(int n, int num_of_colors, int *vertexes)
 {
     int i = 0, flag, j, tmp, colors[num_of_colors];
-    for(; i < num_of_colors; i++)
+    printf("%d g", num_of_colors);
+    /*for(; i < num_of_colors; i++)
     {
         flag = 1;
         randombytes(&tmp, sizeof(tmp));
@@ -63,11 +64,11 @@ void relabeling(int n, int num_of_colors, int *vertexes)
             }
         }
         colors[i] = tmp;
-    }
-    for(i = 0; i < n; i++)
+    }*/
+    /*for(i = 0; i < n; i++)
     {
         vertexes[i] = colors[vertexes[i] - 1];
-    }
+    }*/
 }
 
 void save_colored(int *colored, int n, char *filename)
@@ -78,15 +79,16 @@ void save_colored(int *colored, int n, char *filename)
         fprintf(fout, "%d ", colored[i]);
     fclose(fout);
 }
+
 int **load_graph(int *m, int *n, char *filename)
 {
     FILE *fout = file_open(filename, "r");
 	int **A;
     int i = 0, vertex1, vertex2;
     fscanf(fout, "%d %d", n, m);
-    if(*n > 1001 || *m > *n * *n)
+    if(*n > 1001 || *m > 1000)
     {
-        fprintf(stderr, "n must be < 1001 and m must be <= n^2\n");
+        fprintf(stderr, "n must be < 1001 and m must be <= 1000\n");
         exit(-1);
     }
 
