@@ -46,7 +46,6 @@ int main()
             recv(child_sock, vertexes_for_test_num, sizeof(int)*2, 0);              //numbers of two vertexs for test
             recv(child_sock, vertexes_for_test, sizeof(int)*2, 0);                  //values of two vertexs for test
             vernam_part_decrypt(2, vertexes_for_test, vertexes_for_test_num, key);  //decrypt two vertexes for test
-    printf("f");
             send(child_sock, vertexes_for_test, sizeof(int)*2, 0);
         }else
             break;
