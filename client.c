@@ -3,8 +3,10 @@
 int main(int argc, char *argv[])
 {
     int i,*encrypted_vertexes, n, m, command = 1, **A;
-    int sock, vertexes_for_test[2], vertexes_for_test_encrypt[2], key[2], vertexes_for_test_num[2];
-    int vertexes_for_test_server_decrypt[2], *server_key, *vertexes_decrypt, *vertexes_decrypt_2;
+    int sock, vertexes_for_test[2], vertexes_for_test_encrypt[2];
+    int key[2], vertexes_for_test_num[2];
+    int vertexes_for_test_server_decrypt[2], *server_key = NULL;
+    int *vertexes_decrypt = NULL, *vertexes_decrypt_2 = NULL;
     struct sockaddr_in addr;
     char *end;
     char buf[2];
@@ -45,20 +47,30 @@ int main(int argc, char *argv[])
         send(sock, vertexes_for_test_num, sizeof(int)*2, 0);
         send(sock, vertexes_for_test_encrypt, sizeof(int)*2, 0);
         recv(sock, vertexes_for_test_server_decrypt, sizeof(int)*2, 0);
-        server_key = vernam_decrypt(2, vertexes_for_test_encrypt, vertexes_for_test_server_decrypt);
-        vertexes_decrypt = vernam_decrypt(2, vertexes_for_test_server_decrypt, key);
+        if(server_key != NULL)
+            free(server_key);
+        server_key = vernam_decrypt(2, vertexes_for_test_encrypt,
+                                    vertexes_for_test_server_decrypt);
+        if(vertexes_decrypt != NULL)
+            free(vertexes_decrypt);
+        vertexes_decrypt = vernam_decrypt(2, vertexes_for_test_server_decrypt,
+                                          key);
         if(vertexes_decrypt[0] == vertexes_decrypt[1])		//first test
-        {
             printf("\nERROR colors equal!\n\n");
-        }else
+        else
         	printf("\nColors not equal\n\n");
+        if(vertexes_decrypt_2 != NULL)
+            free(vertexes_decrypt_2);
         vertexes_decrypt_2 = vernam_decrypt(2, vertexes_for_test, server_key);	//second test
         for(i = 0; i < 2; i++)
         {
             if(vertexes_decrypt_2[i] != vertexes_decrypt[i])
                 printf("ERROR server key changed!\n");
         }
-        printf("vertex %d: color %d\nvertex %d: color %d\n", vertexes_for_test_num[0], vertexes_decrypt[0]-1, vertexes_for_test_num[1], vertexes_decrypt[1]-1);
+        printf("vertex %d: color %d\n", vertexes_for_test_num[0], 
+                                        vertexes_decrypt[0]-1);
+        printf("vertex %d: color %d\n", vertexes_for_test_num[1],
+                                        vertexes_decrypt[1]-1);
         printf("1 - another one test, other - finish testing\n");
         do
         {
@@ -72,6 +84,9 @@ int main(int argc, char *argv[])
         free(A[i]);
     free(A);
     free(encrypted_vertexes);
+    free(server_key);
+    free(vertexes_decrypt);
+    free(vertexes_decrypt_2);
     close(sock);
     exit(0);
 }
